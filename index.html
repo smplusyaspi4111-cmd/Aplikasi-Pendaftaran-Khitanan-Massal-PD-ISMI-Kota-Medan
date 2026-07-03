@@ -164,7 +164,411 @@
 
 <script>
     // URL Web App Google Apps Script kamu
+    const SCRIPT_URL = "<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Khitanan Massal - PD ISMI Kota Medan</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #f0f4f1; padding: 20px; color: #333; display: flex; justify-content: center; }
+        .container { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(39, 174, 96, 0.1); width: 100%; max-width: 520px; border-top: 8px solid #27ae60; }
+        
+        /* Header dan Logo */
+        .header-logo { text-align: center; margin-bottom: 20px; }
+        .header-logo img { width: 120px; height: auto; object-fit: contain; }
+        h2 { text-align: center; margin-bottom: 4px; color: #1e6b38; font-size: 22px; font-weight: bold; }
+        .sub-title { text-align: center; font-size: 14px; color: #d4a311; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; color: #2c3e50; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #bdc3c7; border-radius: 8px; font-size: 15px; outline: none; transition: 0.3s; background-color: #fff; }
+        input:focus, select:focus { border-color: #27ae60; box-shadow: 0 0 5px rgba(39, 174, 96, 0.2); }
+        input:disabled, select:disabled { background-color: #f5f5f5; cursor: not-allowed; }
+        
+        .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-align: center; transition: 0.3s; }
+        .btn-primary { background-color: #27ae60; color: white; }
+        .btn-primary:hover { background-color: #219653; }
+        .btn-secondary { background-color: #f1c40f; color: #1e6b38; margin-top: 10px; }
+        .btn-secondary:hover { background-color: #e6b800; }
+        
+        #formPendaftaran, #areaKetua, #pesanPenuh, #groupKecamatan, #groupKelurahan, #groupAlamat { display: none; }
+        .alert-danger { background-color: #eb5757; color: white; padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 15px; font-size: 15px; line-height: 1.4; }
+        .alert-info { background-color: #eaf6ed; border-left: 4px solid #27ae60; padding: 14px; font-size: 14px; margin-bottom: 20px; border-radius: 0 8px 8px 0; color: #1e6b38; line-height: 1.5; }
+        
+        .camera-container { display: flex; flex-direction: column; align-items: center; background: #fafafa; border: 2px dashed #bdc3c7; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        #video { width: 100%; max-width: 320px; background: #000; border-radius: 8px; display: none; transform: scaleX(-1); }
+        #canvas { display: none; }
+        #photoPreview { width: 100%; max-width: 200px; border-radius: 8px; margin-top: 10px; border: 3px solid #27ae60; display: none; }
+        
+        .agreement { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; color: #555; margin-bottom: 25px; }
+        .agreement input { width: auto; margin-top: 3px; }
+        .loading { font-size: 14px; color: #d4a311; font-weight: bold; text-align: center; margin-top: 10px; }
+        .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- HEADER PELAKSANA DENGAN LOGO image_3b727c.jpg -->
+    <div class="header-logo">
+        <img src="https://lh3.googleusercontent.com/d/1Xq6o4fF0wJ9l8eSgqZg9Z_R6R7N8O6U_" id="logoIsmi" alt="Logo PD ISMI Kota Medan" onerror="this.src='https://placehold.co/150x150?text=ISMI+MEDAN'">
+        <h2>PANITIA KHITANAN MASSAL</h2>
+        <div class="sub-title">PD ISMI KOTA MEDAN</div>
+    </div>
+
+    <!-- PESAN JIKA KUOTA PENUH -->
+    <div id="pesanPenuh" class="alert-danger"></div>
+
+    <!-- TAHAP 1: PILIH GRUP -->
+    <div class="form-group">
+        <label for="grup">Pilih Grup Khitanan:</label>
+        <select id="grup" onchange="pilihGrupBaru()">
+            <option value="">-- Pilih Grup --</option>
+            <option value="Grup 1">Grup 1</option>
+            <option value="Grup 2">Grup 2</option>
+            <option value="Grup 3">Grup 3</option>
+            <option value="Grup 4">Grup 4</option>
+            <option value="Grup 5">Grup 5</option>
+        </select>
+    </div>
+
+    <!-- TAHAP 2: VALIDASI KETUA GRUP -->
+    <div id="areaKetua">
+        <div class="form-group">
+            <label for="namaKetua">Masukkan Nama Ketua Grup / Penanggung Jawab:</label>
+            <input type="text" id="namaKetua" placeholder="Ketik nama ketua untuk verifikasi sandi">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="verifikasiKetuaDanKuota()">Cek Ketersediaan</button>
+        <div id="loadingKuota" class="loading" style="display: none;">Memeriksa alokasi baris kuota...</div>
+    </div>
+
+    <!-- TAHAP 3: FORMULIR UTAMA -->
+    <form id="formPendaftaran" onsubmit="kirimDataPendaftaran(event)">
+        <div id="infoKuota" class="alert-info"></div>
+
+        <div class="form-group">
+            <label for="namaAnak">Nama Lengkap Anak:</label>
+            <input type="text" id="namaAnak" required placeholder="Nama calon peserta khitan">
+        </div>
+
+        <div class="form-group">
+            <label for="namaAyah">Nama Ayah Kandung (untuk Bin):</label>
+            <input type="text" id="namaAyah" required placeholder="Nama ayah kandung">
+        </div>
+
+        <div class="row-grid">
+            <div class="form-group">
+                <label for="umur">Umur Anak (Tahun):</label>
+                <input type="number" id="umur" required placeholder="Contoh: 10">
+            </div>
+            <div class="form-group">
+                <label for="golDarah">Golongan Darah:</label>
+                <select id="golDarah">
+                    <option value="-">- Opsional -</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="AB">AB</option>
+                    <option value="O">O</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- CHAINED DROPDOWN DOMISILI KOTA MEDAN -->
+        <div class="form-group">
+            <label for="kota">Kabupaten / Kota:</label>
+            <select id="kota" onchange="pilihKota()">
+                <option value="">-- Pilih Kota --</option>
+                <option value="Kota Medan">Kota Medan</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="groupKecamatan">
+            <label for="kecamatan">Kecamatan:</label>
+            <select id="kecamatan" onchange="pilihKecamatan()">
+                <option value="">-- Pilih Kecamatan --</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="groupKelurahan">
+            <label for="kelurahan">Kelurahan:</label>
+            <select id="kelurahan" onchange="pilihKelurahan()">
+                <option value="">-- Pilih Kelurahan --</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="groupAlamat">
+            <label for="alamat">Alamat Lengkap / Nama Jalan Rumah:</label>
+            <input type="text" id="alamat" required placeholder="Nama jalan, nomor rumah, RT/RW">
+        </div>
+
+        <!-- FITUR FOTO SELFIE -->
+        <div class="form-group">
+            <label>Foto Selfie Anak (Wajib):</label>
+            <div class="camera-container">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas"></canvas>
+                <img id="photoPreview" alt="Hasil Selfie">
+                <button type="button" id="btnKamera" class="btn btn-secondary" onclick="aktifkanKamera()">Buka Kamera HP</button>
+                <button type="button" id="btnAmbil" class="btn btn-primary" style="display:none; margin-top: 10px;" onclick="ambilFoto()">Ambil Foto</button>
+            </div>
+        </div>
+
+        <!-- KESEPAKATAN -->
+        <div class="agreement">
+            <input type="checkbox" id="setuju" required>
+            <label for="setuju">
+                Dengan mencentang kotak ini, kami selaku orang tua/wali menyatakan bahwa data yang diisi sudah benar dan dengan sukarela mendaftarkan anak kami dalam kegiatan Khitanan Massal ini. Kami mempercayakan proses pelaksanaan kepada tim medis demi kebaikan dan kesehatan anak kami.
+            </label>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn btn-primary">Daftar Sekarang</button>
+        <div id="loadingSubmit" class="loading" style="display: none;">Sedang mengunci data pendaftaran...</div>
+    </form>
+</div>
+
+<script>
+    // URL Web App Google Apps Script kamu
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwRNOpeqglqaXBfEzd4f2xnVDoTM2VDEJD24mEXELP6V1YLYQLNdVVF6rEYdoWT8Mb-/exec";
+
+    // DATA RESMI KECAMATAN & KELURAHAN KOTA MEDAN
+    const dataMedan = {
+        "Medan Amplas": ["Amplas", "Harjosari I", "Harjosari II", "Sitirejo II", "Sitirejo III", "Timbang Deli"],
+        "Medan Area": ["Sukaramai I", "Sukaramai II", "Sei Rengas II", "Matsum I", "Matsum II", "Matsum IV", "Kota Matsum III", "Pandau Hulu II", "Tegal Sari I", "Tegal Sari II", "Tegal Sari III"],
+        "Medan Barat": ["Kesawan", "Silalas", "Glugur Kota", "Pulo Brayan Kota", "Karang Berombak", "Sei Agul"],
+        "Medan Baru": ["Amdas", "Darats", "Babura", "Merdeka", "Padang Bulan", "Petisah Hulu"],
+        "Medan Belawan": ["Belawan I", "Belawan II", "Belawan Bahagia", "Belawan Bahari", "Belawan Sicanang", "Bagan Deli"],
+        "Medan Deli": ["Tanjung Mulia", "Tanjung Mulia Hilir", "Mabar", "Mabar Hilir", "Kota Bangun", "Titi Papan"],
+        "Medan Denai": ["Denai", "Medan Tenggara", "Tegal Sari Mandala I", "Tegal Sari Mandala II", "Tegal Sari Mandala III", "Binjai"],
+        "Medan Helvetia": ["Helvetia", "Helvetia Tengah", "Helvetia Timur", "Tanjung Gusta", "Cinta Damai", "Dwikora", "Sei Sikambing C II"],
+        "Medan Johor": ["Gedung Johor", "Sukamaju", "Pangkalan Mansyur", "Kwala Bekala", "Titi Kuning", "Kedai Durian"],
+        "Medan Kota": ["Kota Matsum I", "Kota Matsum II", "Matsum Sempurna", "Sudirejo I", "Sudirejo II", "Pasar Merah Timur", "Pasar Merah Barat", "Pusat Pasar", "Sei Rengas I", "Mesjid", "Pandau Hulu I", "Teladan Barat"],
+        "Medan Labuhan": ["Martubung", "Besar", "Tanghkahan", "Pekan Labuhan", "Sei Mati", "Nelayan Indah"],
+        "Medan Maimun": ["Aur", "Hamdan", "Sukaraja", "Kampung Baru", "Sei Mati", "Jati"],
+        "Medan Marelan": ["Labuhan Deli", "Rengas Pulau", "Terjun", "Paya Pasir", "Tanah Enam Ratus"],
+        "Medan Perjuangan": ["Tegal Rejo", "Sidorame Barat I", "Sidorame Barat II", "Sidorame Timur", "Sei Kera Hilir I", "Sei Kera Hilir II", "Sei Kera Hulu", "Pahlawan", "Pandau Hilir"],
+        "Medan Petisah": ["Petisah Tengah", "Dauh", "Sekip", "Sei Sikambing D", "Putih", "Siti Rejo I"],
+        "Medan Polonia": ["Polonia", "Sari Rejo", "Suka Damai", "Anggrung", "Madras Hulu"],
+        "Medan Selayang": ["Padang Bulan Selayang I", "Padang Bulan Selayang II", "Sempakata", "Tanjung Sari", "Beringin", "Asam Kumbang"],
+        "Medan Sunggal": ["Babura Sunggal", "Sunggal", "Simpang Tanjung", "Sei Sikambing B", "Tanjung Rejo", "Lalang"],
+        "Medan Tembung": ["Bantan", "Bantan Timur", "Tembung", "Sidorejo", "Sidorejo Hilir", "Indra Kasih", "Bandar Selamat"],
+        "Medan Tuntungan": ["Lau Cih", "Tanjung Selamat", "Simalingkar B", "Mangga", "Namau Gajah", "Sidomulyo", "Selesai", "Ladang Bambu", "Simpang Selayang"],
+        "Medan Timur": ["Glugur Darat I", "Glugur Darat II", "Pulo Brayan Darat I", "Pulo Brayan Darat II", "Pulo Brayan Bengkel", "Pulo Brayan Bengkel Baru", "Sidorame Timur", "Gg Buntu", "Sidodadi", "Perintis", "Durian"]
+    };
+
+    let fotoBase64Data = "";
+    let streamKamera = null;
+
+    function pilihGrupBaru() {
+        document.getElementById('areaKetua').style.display = document.getElementById('grup').value ? 'block' : 'none';
+        document.getElementById('formPendaftaran').style.display = 'none';
+        document.getElementById('pesanPenuh').style.display = 'none';
+        document.getElementById('namaKetua').value = "";
+        matikanKamera();
+    }
+
+    function verifikasiKetuaDanKuota() {
+        const grup = document.getElementById('grup').value;
+        const namaKetuaInput = document.getElementById('namaKetua').value.trim();
+        
+        if (!namaKetuaInput) {
+            alert("Harap masukkan Nama Ketua Grup terlebih dahulu!");
+            return;
+        }
+
+        document.getElementById('loadingKuota').style.display = 'block';
+        document.getElementById('pesanPenuh').style.display = 'none';
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'cekKuota', grup: grup, namaKetua: namaKetuaInput })
+        })
+        .then(res => res.json())
+        .then(response => {
+            document.getElementById('loadingKuota').style.display = 'none';
+            
+            if (response.status === 'salah_ketua') {
+                alert(response.pesan);
+            } else if (response.status === 'penuh') {
+                document.getElementById('pesanPenuh').innerText = response.pesan;
+                document.getElementById('pesanPenuh').style.display = 'block';
+                document.getElementById('formPendaftaran').style.display = 'none';
+            } else if (response.status === 'tersedia') {
+                document.getElementById('infoKuota').innerHTML = `<strong>Verifikasi Berhasil!</strong> Alokasi kuota untuk <strong>${response.namaResmiKetua}</strong> masih tersedia. Sisa alokasi: ${response.sisa} anak.`;
+                document.getElementById('formPendaftaran').style.display = 'block';
+                document.getElementById('areaKetua').style.display = 'none';
+                resetDropdownWilayah();
+            }
+        })
+        .catch(err => {
+            document.getElementById('loadingKuota').style.display = 'none';
+            alert("Terjadi gangguan koneksi sistem.");
+            console.error(err);
+        });
+    }
+
+    // DRIVEL DROPDOWN CASCADE LOGIC
+    function resetDropdownWilayah() {
+        document.getElementById('kota').value = "";
+        document.getElementById('groupKecamatan').style.display = 'none';
+        document.getElementById('groupKelurahan').style.display = 'none';
+        document.getElementById('groupAlamat').style.display = 'none';
+    }
+
+    function pilihKota() {
+        const kota = document.getElementById('kota').value;
+        const kecSelect = document.getElementById('kecamatan');
+        
+        kecSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        document.getElementById('groupKelurahan').style.display = 'none';
+        document.getElementById('groupAlamat').style.display = 'none';
+
+        if (kota === "Kota Medan") {
+            Object.keys(dataMedan).sort().forEach(kec => {
+                let opt = document.createElement('option');
+                opt.value = kec;
+                opt.innerText = kec;
+                kecSelect.appendChild(opt);
+            });
+            document.getElementById('groupKecamatan').style.display = 'block';
+        } else {
+            document.getElementById('groupKecamatan').style.display = 'none';
+        }
+    }
+
+    function pilihKecamatan() {
+        const kec = document.getElementById('kecamatan').value;
+        const kelSelect = document.getElementById('kelurahan');
+        
+        kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan --</option>';
+        document.getElementById('groupAlamat').style.display = 'none';
+
+        if (kec && dataMedan[kec]) {
+            dataMedan[kec].sort().forEach(kel => {
+                let opt = document.createElement('option');
+                opt.value = kel;
+                opt.innerText = kel;
+                kelSelect.appendChild(opt);
+            });
+            document.getElementById('groupKelurahan').style.display = 'block';
+        } else {
+            document.getElementById('groupKelurahan').style.display = 'none';
+        }
+    }
+
+    function pilihKelurahan() {
+        const kel = document.getElementById('kelurahan').value;
+        if (kel) {
+            document.getElementById('groupAlamat').style.display = 'block';
+        } else {
+            document.getElementById('groupAlamat').style.display = 'none';
+        }
+    }
+
+    // CAMERA SYSTEM
+    function aktifkanKamera() {
+        const video = document.getElementById('video');
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+        .then(stream => {
+            streamKamera = stream;
+            video.srcObject = stream;
+            video.style.display = "block";
+            document.getElementById('btnKamera').style.display = "none";
+            document.getElementById('btnAmbil').style.display = "block";
+            document.getElementById('photoPreview').style.display = "none";
+        })
+        .catch(err => {
+            alert("Gagal mengaktifkan kamera. Berikan izin akses kamera pada browser.");
+        });
+    }
+
+    function ambilFoto() {
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const photoPreview = document.getElementById('photoPreview');
+        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        const context = canvas.getContext('2d');
+        context.translate(canvas.width, 0);
+        context.scale(-1, 1);
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        fotoBase64Data = canvas.toDataURL('image/jpeg', 0.7); 
+        photoPreview.src = fotoBase64Data;
+        photoPreview.style.display = "block";
+        
+        matikanKamera();
+    }
+
+    function matikanKamera() {
+        if (streamKamera) {
+            streamKamera.getTracks().forEach(track => track.stop());
+        }
+        document.getElementById('video').style.display = "none";
+        document.getElementById('btnKamera').style.display = "block";
+        document.getElementById('btnKamera').innerText = "Foto Ulang";
+        document.getElementById('btnAmbil').style.display = "none";
+    }
+
+    // SUBMIT REGISTER
+    function kirimDataPendaftaran(event) {
+        event.preventDefault();
+
+        if (!fotoBase64Data) {
+            alert("Harap ambil foto selfie calon peserta terlebih dahulu!");
+            return;
+        }
+
+        document.getElementById('btnSubmit').disabled = true;
+        document.getElementById('loadingSubmit').style.display = 'block';
+
+        const payload = {
+            action: 'daftar',
+            grup: document.getElementById('grup').value,
+            namaKetua: document.getElementById('namaKetua').value,
+            namaAnak: document.getElementById('namaAnak').value,
+            namaAyah: document.getElementById('namaAyah').value,
+            umur: document.getElementById('umur').value,
+            alamat: document.getElementById('alamat').value,
+            kelurahan: document.getElementById('kelurahan').value,
+            kecamatan: document.getElementById('kecamatan').value,
+            kota: document.getElementById('kota').value,
+            golonganDarah: document.getElementById('golDarah').value,
+            fotoBase64: fotoBase64Data
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(response => {
+            document.getElementById('loadingSubmit').style.display = 'none';
+            document.getElementById('btnSubmit').disabled = false;
+            
+            if (response.status === 'sukses') {
+                alert("Pendaftaran Berhasil! Data Anda sudah masuk ke tabel cetak.");
+                location.reload(); 
+            } else {
+                alert(response.pesan);
+            }
+        })
+        .catch(err => {
+            document.getElementById('loadingSubmit').style.display = 'none';
+            document.getElementById('btnSubmit').disabled = false;
+            alert("Gagal memproses pendaftaran.");
+            console.error(err);
+        });
+    }
+</script>
+
+</body>
+</html>
+
+";
 
     // DATA RESMI KECAMATAN & KELURAHAN KOTA MEDAN
     const dataMedan = {
