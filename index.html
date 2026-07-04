@@ -73,8 +73,8 @@
     <!-- TAHAP 2: VALIDASI KETUA GRUP -->
     <div id="areaKetua">
         <div class="form-group">
-            <label for="namaKetua">Masukkan Nama Ketua Grup / Penanggung Jawab:</label>
-            <input type="text" id="namaKetua" placeholder="Ketik nama ketua untuk verifikasi sandi">
+            <label for="namaKetua">Masukkan Nama Penyedia Kuota:</label>
+            <input type="text" id="namaKetua" placeholder="Ketik nama Penyedia Kuota untuk verifikasi sandi">
         </div>
         <button type="button" class="btn btn-primary" onclick="verifikasiKetuaDanKuota()">Cek Ketersediaan</button>
         <div id="loadingKuota" class="loading" style="display: none;">Memeriksa alokasi baris kuota...</div>
@@ -90,7 +90,7 @@
         </div>
 
         <div class="form-group">
-            <label for="namaAyah">Nama Ayah Kandung (untuk Bin):</label>
+            <label for="namaAyah">Bin / Nama Ayah Kandung:</label>
             <input type="text" id="namaAyah" required placeholder="Nama ayah kandung">
         </div>
 
@@ -212,7 +212,7 @@
         const namaKetuaInput = document.getElementById('namaKetua').value.trim();
         
         if (!namaKetuaInput) {
-            alert("Harap masukkan Nama Ketua Grup terlebih dahulu!");
+            alert("Harap masukkan Nama Penyedia Kuota Grup terlebih dahulu!");
             return;
         }
 
