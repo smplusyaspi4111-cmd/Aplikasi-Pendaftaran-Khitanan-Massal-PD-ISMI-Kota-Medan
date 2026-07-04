@@ -91,6 +91,12 @@
             <input type="text" id="namaAyah" required placeholder="Nama ayah kandung">
         </div>
 
+        <!-- KOLOM INPUT NOMOR HP/WA BARU -->
+        <div class="form-group">
+            <label for="nomorHP">No. HP/WA:</label>
+            <input type="tel" id="nomorHP" placeholder="Contoh: 08123456789" required pattern="[0-9]+">
+        </div>
+
         <div class="row-grid">
             <div class="form-group">
                 <label for="umur">Umur Anak (Tahun):</label>
@@ -360,6 +366,7 @@
             namaKetua: document.getElementById('namaKetua').value,
             namaAnak: document.getElementById('namaAnak').value,
             namaAyah: document.getElementById('namaAyah').value,
+            nomorHP: document.getElementById('nomorHP').value, // BERHASIL DITAMBAHKAN
             umur: document.getElementById('umur').value,
             alamat: document.getElementById('alamat').value,
             kelurahan: document.getElementById('kelurahan').value,
