@@ -11,9 +11,10 @@
         
         /* Header dan Logo */
         .header-logo { text-align: center; margin-bottom: 20px; }
-        .header-logo img { width: 120px; height: auto; object-fit: contain; }
+        .header-logo img { width: 140px; height: auto; object-fit: contain; margin-bottom: 10px; }
         h2 { text-align: center; margin-bottom: 4px; color: #1e6b38; font-size: 22px; font-weight: bold; }
-        .sub-title { text-align: center; font-size: 14px; color: #d4a311; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sub-title { text-align: center; font-size: 14px; color: #d4a311; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .full-name { text-align: center; font-size: 11px; color: #7f8c8d; font-style: italic; margin-bottom: 25px; font-weight: 500; }
         
         .form-group { margin-bottom: 18px; }
         label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; color: #2c3e50; }
@@ -46,9 +47,11 @@
 
 <div class="container">
     <div class="header-logo">
-        <img src="https://lh3.googleusercontent.com/d/1Xq6o4fF0wJ9l8eSgqZg9Z_R6R7N8O6U_" id="logoIsmi" alt="Logo PD ISMI Kota Medan" onerror="this.src='https://placehold.co/150x150?text=ISMI+MEDAN'">
+        <!-- LINK LOGO GOOGLE DRIVE SUDAH DIMASUKKAN -->
+        <img src="https://lh3.googleusercontent.com/d/1RG70ZHYiJvN-2841MLHt-vn5SqqIlQwU" id="logoIsmi" alt="Logo PD ISMI Kota Medan" onerror="this.src='https://placehold.co/150x150?text=ISMI+MEDAN'">
         <h2>PANITIA KHITANAN MASSAL</h2>
         <div class="sub-title">PD ISMI KOTA MEDAN</div>
+        <div class="full-name">(Pengurus Daerah Ikatan Sarjana Melayu Indonesia)</div>
     </div>
 
     <!-- PESAN JIKA KUOTA PENUH -->
@@ -91,7 +94,6 @@
             <input type="text" id="namaAyah" required placeholder="Nama ayah kandung">
         </div>
 
-        <!-- KOLOM INPUT NOMOR HP/WA BARU -->
         <div class="form-group">
             <label for="nomorHP">No. HP/WA:</label>
             <input type="tel" id="nomorHP" placeholder="Contoh: 08123456789" required pattern="[0-9]+">
@@ -168,7 +170,6 @@
 </div>
 
 <script>
-    // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfLevqHaVRv__Uwzhvw0SAMtjOshamRjs595C7MHlvDJ8ODDVqErgNrb_FRWEd-38G/exec";
 
     const dataMedan = {
@@ -183,7 +184,7 @@
         "Medan Johor": ["Gedung Johor", "Sukamaju", "Pangkalan Mansyur", "Kwala Bekala", "Titi Kuning", "Kedai Durian"],
         "Medan Kota": ["Kota Matsum I", "Kota Matsum II", "Matsum Sempurna", "Sudirejo I", "Sudirejo II", "Pasar Merah Timur", "Pasar Merah Barat", "Pusat Pasar", "Sei Rengas I", "Mesjid", "Pandau Hulu I", "Teladan Barat"],
         "Medan Labuhan": ["Martubung", "Besar", "Tanghkahan", "Pekan Labuhan", "Sei Mati", "Nelayan Indah"],
-        "Medan Maimun": ["Aur", "Hamdan", "Sukaraja", "Kampung Baru", "Sei Mati", "Jati"],
+        "Medan Maimun": ["Aur", "Hamdan", "Sukuraja", "Kampung Baru", "Sei Mati", "Jati"],
         "Medan Marelan": ["Labuhan Deli", "Rengas Pulau", "Terjun", "Paya Pasir", "Tanah Enam Ratus"],
         "Medan Perjuangan": ["Tegal Rejo", "Sidorame Barat I", "Sidorame Barat II", "Sidorame Timur", "Sei Kera Hilir I", "Sei Kera Hilir II", "Sei Kera Hulu", "Pahlawan", "Pandau Hilir"],
         "Medan Petisah": ["Petisah Tengah", "Dauh", "Sekip", "Sei Sikambing D", "Putih", "Siti Rejo I"],
@@ -366,7 +367,7 @@
             namaKetua: document.getElementById('namaKetua').value,
             namaAnak: document.getElementById('namaAnak').value,
             namaAyah: document.getElementById('namaAyah').value,
-            nomorHP: document.getElementById('nomorHP').value, // BERHASIL DITAMBAHKAN
+            nomorHP: document.getElementById('nomorHP').value, 
             umur: document.getElementById('umur').value,
             alamat: document.getElementById('alamat').value,
             kelurahan: document.getElementById('kelurahan').value,
